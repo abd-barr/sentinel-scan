@@ -5,10 +5,12 @@ import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from app.scanner.crawler import WebCrawler
+from app.scanner.engine import ScannerEngine
 
-
+engine = ScannerEngine()
 crawler = WebCrawler(
     "http://127.0.0.1:8000",
+    engine=engine,
     max_pages=10
 )
 

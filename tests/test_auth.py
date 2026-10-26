@@ -1,7 +1,17 @@
+import os
+import sys
 import unittest
-from app.app import app
-from app.models.scan import db
-from app.models.user import User
+
+root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+app_dir = os.path.join(root_dir, 'app')
+if root_dir not in sys.path:
+    sys.path.insert(0, root_dir)
+if app_dir not in sys.path:
+    sys.path.insert(0, app_dir)
+
+from app import app
+from models.scan import db
+from models.user import User
 
 class AuthTestCase(unittest.TestCase):
     def setUp(self):

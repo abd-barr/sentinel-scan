@@ -470,6 +470,17 @@ The project is now fully complete per the original roadmap.
 
 ---
 
+# Stage 32 — Target URL Normalization & Localhost Scanning UX Improvements
+
+Addressed issues preventing users from scanning local applications when inputting URLs without explicit protocols or using loopback variations:
+- Added `normalize_target_url` to automatically prepend `http://` when omitted (e.g. `localhost:8000`, `localhost:3000`).
+- Expanded loopback address support in `is_allowed_target` to cover `localhost`, `127.0.0.1`, `::1`, `[::1]`, and standard IPv4 loopback subnets (`127.0.0.0/8`).
+- Changed target URL input in `index.html` from `type="url"` to `type="text"` so browser form validation does not reject scheme-less localhost URLs.
+- Updated `start_scan` to redirect directly to `/scans/<scan_id>` so users can monitor real-time scan progress immediately via the live progress bar.
+- Updated `tests/test_crawler.py` and `tests/test_security_headers.py` to instantiate and pass `ScannerEngine`.
+
+---
+
 # Current Development Point
 
 The project has achieved its final goal. 

@@ -136,9 +136,17 @@ Skipped because the current lab form uses GET.
 
 ---
 
+# Target URL Handling & Localhost Support
+
+- Target URLs are normalized via `normalize_target_url` to support scheme-less input (e.g. `localhost:8000` -> `http://localhost:8000`).
+- Loopback verification permits `localhost`, `127.0.0.1`, `::1`, `[::1]`, and any `127.0.0.0/8` IP.
+- Upon initiating a scan, users are redirected to `scan_details` for live progress tracking.
+
+---
+
 # Current Known Issue
 
-None blocking currently. HSTS behavior is now correct.
+None blocking currently. Local target normalization and real-time polling functional.
 
 ---
 

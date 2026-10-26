@@ -217,11 +217,11 @@
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
 
             <input
-                type="url"
+                type="text"
                 name="target_url"
                 class="scan-input"
                 value="http://127.0.0.1:8000"
-                placeholder="http://127.0.0.1:8000"
+                placeholder="http://127.0.0.1:8000 or localhost:8000"
                 required
             >
 
@@ -237,7 +237,7 @@
 
 
         <p class="scan-help">
-            Only authorized localhost targets are permitted.
+            Only authorized local targets are permitted (e.g. <code>http://127.0.0.1:8000</code> or <code>localhost:8000</code>).
         </p>
 
     </section>

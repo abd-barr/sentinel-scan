@@ -5,6 +5,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from app.scanner.security_headers import SecurityHeadersScanner
+from app.scanner.engine import ScannerEngine
 
 
 TARGET_URL = "http://127.0.0.1:8000"
@@ -12,7 +13,8 @@ TARGET_URL = "http://127.0.0.1:8000"
 
 def main():
 
-    scanner = SecurityHeadersScanner()
+    engine = ScannerEngine()
+    scanner = SecurityHeadersScanner(engine=engine)
 
     result = scanner.scan(TARGET_URL)
 

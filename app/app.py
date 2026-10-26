@@ -55,29 +55,55 @@ with app.app_context():
 
 @login_manager.user_loader
 def load_user(user_id):
-    return db.session.get(User, int(user_id))
+    try:
+        return db.session.get(User, int(user_id))
+    except Exception:
+        return None
+
+
+def normalize_target_url(url):
+    """
+    Normalizes a user-provided target URL by stripping whitespace
+    and prepending 'http://' if the scheme was omitted.
+    """
+    if not url:
+        return ""
+    url = url.strip()
+    if not (url.startswith("http://") or url.startswith("https://")):
+        url = "http://" + url
+    return url
 
 
 def is_allowed_target(url):
     """
-    Only allow local test targets.
+    Only allow local test targets (localhost, 127.0.0.1, IPv6 loopback, and 127.0.0.0/8).
     """
 
     try:
+        url = normalize_target_url(url)
         parsed = urlparse(url)
 
         allowed_hosts = {
             "localhost",
-            "127.0.0.1"
+            "127.0.0.1",
+            "::1",
+            "[::1]"
         }
+
+        is_loopback_ip = False
+        if parsed.hostname:
+            parts = parsed.hostname.split(".")
+            if len(parts) == 4 and parts[0] == "127" and all(p.isdigit() and 0 <= int(p) <= 255 for p in parts):
+                is_loopback_ip = True
 
         return (
             parsed.scheme in {"http", "https"}
-            and parsed.hostname in allowed_hosts
+            and (parsed.hostname in allowed_hosts or is_loopback_ip)
         )
 
     except Exception:
         return False
+
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -335,11 +361,12 @@ def scan_progress(scan_id):
 @app.route("/scan", methods=["POST"])
 @login_required
 def start_scan():
-    target_url = request.form.get("target_url", "").strip()
+    raw_url = request.form.get("target_url", "")
+    target_url = normalize_target_url(raw_url)
 
     if not is_allowed_target(target_url):
         flash(
-            "Only authorized localhost targets are allowed.",
+            "Only authorized localhost targets are allowed (e.g., http://localhost:8000 or http://127.0.0.1:8000).",
             "error"
         )
         return redirect(url_for("index"))
@@ -372,12 +399,12 @@ def start_scan():
 
         scan_executor.submit(background_scan, app.app_context(), scan_id)
 
-        flash(f"Scan #{scan_id} started in the background.", "success")
+        flash(f"Scan #{scan_id} started.", "success")
+        return redirect(url_for("scan_details", scan_id=scan_id))
 
     except Exception as error:
         flash(f"Failed to start scan: {error}", "error")
-
-    return redirect(url_for("index"))
+        return redirect(url_for("index"))
 
 @app.route("/scans/<int:scan_id>")
 @login_required
